@@ -1,28 +1,14 @@
 import { useEffect, useState } from 'react';
 
 export const AnimatedBackground = ({ children }: { children: React.ReactNode }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Animated gradient background */}
+      {/* Static gradient background */}
       <div
         className="fixed inset-0 opacity-30"
         style={{
           background: `
-            radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
+            radial-gradient(circle at 50% 50%, 
               hsl(var(--accent)) 0%, 
               hsl(var(--primary)) 25%, 
               transparent 50%),
@@ -30,7 +16,6 @@ export const AnimatedBackground = ({ children }: { children: React.ReactNode }) 
               hsl(var(--background)) 0%, 
               hsl(var(--muted)) 100%)
           `,
-          transition: 'background 0.3s ease',
         }}
       />
 

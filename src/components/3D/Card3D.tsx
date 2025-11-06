@@ -14,36 +14,10 @@ export const Card3D = ({
   glowColor = 'accent',
   intensity = 1 
 }: Card3DProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    setMousePosition({ x, y });
-  };
-
-  const transform = isHovered
-    ? `perspective(1000px) rotateX(${(mousePosition.y - 0.5) * 20 * intensity}deg) rotateY(${(mousePosition.x - 0.5) * -20 * intensity}deg) translateZ(20px)`
-    : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
-
   return (
-    <div
-      className={`group relative transition-all duration-300 ${className}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onMouseMove={handleMouseMove}
-      style={{ transform }}
-    >
-      {/* Glow effect */}
-      <div
-        className={`absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl`}
-        style={{
-          background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, hsl(var(--${glowColor})) 0%, transparent 70%)`,
-          transform: 'scale(1.1)',
-        }}
-      />
+    <div className={`group relative ${className}`}>
+      {/* Static glow effect */}
+      <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl bg-gradient-to-br from-accent/20 to-primary/20 transform scale-110" />
       
       {/* Glass morphism overlay */}
       <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
