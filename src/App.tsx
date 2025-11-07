@@ -12,7 +12,6 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
-import WhiteCard from "./pages/WhiteCard";
 import Auth from "./pages/Auth";
 import Booking from "./pages/Booking";
 import MyBookings from "./pages/MyBookings";
@@ -53,7 +52,6 @@ const AppContent = () => {
         <Route path="/about" element={<About />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/white-card" element={<WhiteCard />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/bookings" element={<MyBookings />} />

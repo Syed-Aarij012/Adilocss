@@ -48,7 +48,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: signUpData.email,
         password: signUpData.password,
         options: {
@@ -56,7 +56,6 @@ const Auth = () => {
             full_name: signUpData.fullName,
             phone: signUpData.phone,
           },
-          emailRedirectTo: `${window.location.origin}/`,
         },
       });
 
@@ -70,7 +69,13 @@ const Auth = () => {
         return;
       }
 
-      toast.success("Account created successfully! You can now sign in.");
+      // Check if email confirmation is required
+      if (data?.user && !data.session) {
+        toast.success("Account created! Please check your email to confirm your account.");
+      } else {
+        toast.success("Account created successfully! You're now signed in.");
+      }
+      
       setSignUpData({ email: "", password: "", fullName: "", phone: "" });
     } catch (error: any) {
       console.log("Signup error handled gracefully");
