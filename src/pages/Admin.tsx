@@ -534,90 +534,77 @@ const ModernAdmin = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <FloatingElement delay={0}>
-              <div className="mb-8">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-foreground via-accent to-foreground bg-clip-text text-transparent">
-                      Admin Dashboard
-                    </h1>
-                    <p className="text-muted-foreground text-lg">Manage your salon operations efficiently</p>
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-foreground via-accent to-foreground bg-clip-text text-transparent">
+                    Admin Dashboard
+                  </h1>
+                  <p className="text-muted-foreground text-base sm:text-lg">Manage your salon operations</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="hidden sm:block text-right backdrop-blur-sm bg-card/50 rounded-lg p-3 border border-border/50">
+                    <p className="text-sm text-muted-foreground">Welcome back,</p>
+                    <p className="font-semibold text-foreground">Admin</p>
                   </div>
-                  <FloatingElement delay={0.2}>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right backdrop-blur-sm bg-card/50 rounded-lg p-3 border border-border/50">
-                        <p className="text-sm text-muted-foreground">Welcome back,</p>
-                        <p className="font-semibold text-foreground">Admin</p>
-                      </div>
-                      <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300">
-                        <UserIcon className="h-6 w-6 text-white" />
-                      </div>
-                    </div>
-                  </FloatingElement>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center shadow-lg">
+                    <UserIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
                 </div>
               </div>
-            </FloatingElement>
+            </div>
 
             {/* Stats Cards */}
-            <ParallaxSection speed={-0.1}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {[
-                  {
-                    title: "Total Customers",
-                    value: stats.totalUsers,
-                    icon: <Users className="h-8 w-8" />,
-                    color: "from-blue-500 to-purple-600",
-                    delay: 0.3
-                  },
-                  {
-                    title: "Total Revenue",
-                    value: `£${stats.totalRevenue.toFixed(0)}`,
-                    icon: <DollarSign className="h-8 w-8" />,
-                    color: "from-green-500 to-teal-600",
-                    delay: 0.4
-                  },
-                  {
-                    title: "Pending Bookings",
-                    value: stats.pendingBookings,
-                    icon: <AlertCircle className="h-8 w-8" />,
-                    color: "from-orange-500 to-red-600",
-                    delay: 0.5
-                  },
-                  {
-                    title: "Today's Bookings",
-                    value: stats.todayBookings,
-                    icon: <Calendar className="h-8 w-8" />,
-                    color: "from-purple-500 to-pink-600",
-                    delay: 0.6
-                  }
-                ].map((stat, index) => (
-                  <FloatingElement key={stat.title} delay={stat.delay}>
-                    <Card3D className="backdrop-blur-sm bg-card/90 border-border/50">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-muted-foreground text-sm font-medium">{stat.title}</p>
-                            <p className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                              {stat.value}
-                            </p>
-                          </div>
-                          <div className={`p-3 rounded-full bg-gradient-to-br ${stat.color} text-white shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
-                            {stat.icon}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card3D>
-                  </FloatingElement>
-                ))}
-              </div>
-            </ParallaxSection>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+              {[
+                {
+                  title: "Total Customers",
+                  value: stats.totalUsers,
+                  icon: <Users className="h-6 w-6 sm:h-8 sm:w-8" />,
+                  color: "from-blue-500 to-purple-600"
+                },
+                {
+                  title: "Total Revenue",
+                  value: `£${stats.totalRevenue.toFixed(0)}`,
+                  icon: <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />,
+                  color: "from-green-500 to-teal-600"
+                },
+                {
+                  title: "Pending Bookings",
+                  value: stats.pendingBookings,
+                  icon: <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8" />,
+                  color: "from-orange-500 to-red-600"
+                },
+                {
+                  title: "Today's Bookings",
+                  value: stats.todayBookings,
+                  icon: <Calendar className="h-6 w-6 sm:h-8 sm:w-8" />,
+                  color: "from-purple-500 to-pink-600"
+                }
+              ].map((stat) => (
+                <Card key={stat.title} className="backdrop-blur-sm bg-card border-border shadow-md">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-muted-foreground text-xs sm:text-sm font-medium truncate">{stat.title}</p>
+                        <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent mt-1">
+                          {stat.value}
+                        </p>
+                      </div>
+                      <div className={`p-2 sm:p-3 rounded-full bg-gradient-to-br ${stat.color} text-white shadow-lg flex-shrink-0 ml-2`}>
+                        {stat.icon}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
             {/* Search and Filters */}
-            <FloatingElement delay={0.7}>
-              <Card3D className="mb-6 backdrop-blur-sm bg-card/90 border-border/50">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="relative flex-1">
+            <Card className="mb-4 sm:mb-6 backdrop-blur-sm bg-card border-border shadow-md">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <div className="relative flex-1">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         placeholder="Search customers, bookings, or services..."
@@ -644,103 +631,105 @@ const ModernAdmin = () => {
             </FloatingElement>
 
             {/* Main Content Tabs */}
-            <FloatingElement delay={0.8}>
-              <Tabs defaultValue="bookings" className="w-full">
-                <div className="flex justify-center mb-8">
-                  <TabsList className="grid grid-cols-4 bg-card/80 backdrop-blur-sm border border-border/50 p-1 rounded-lg">
+            <Tabs defaultValue="bookings" className="w-full">
+              <div className="flex justify-center mb-4 sm:mb-8 overflow-x-auto">
+                <TabsList className="grid grid-cols-4 bg-card/80 backdrop-blur-sm border border-border/50 p-1 rounded-lg min-w-max">
                     <TabsTrigger 
                       value="bookings"
-                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300"
+                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300 text-xs sm:text-sm px-2 sm:px-4"
                     >
-                      Bookings ({bookings.length})
+                      <span className="hidden sm:inline">Bookings</span>
+                      <span className="sm:hidden">Book</span> ({bookings.length})
                     </TabsTrigger>
                     <TabsTrigger 
                       value="calendar"
-                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300"
+                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300 text-xs sm:text-sm px-2 sm:px-4"
                     >
-                      Calendar
+                      <span className="hidden sm:inline">Calendar</span>
+                      <span className="sm:hidden">Cal</span>
                     </TabsTrigger>
                     <TabsTrigger 
                       value="customers"
-                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300"
+                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300 text-xs sm:text-sm px-2 sm:px-4"
                     >
-                      Customers ({users.length})
+                      <span className="hidden sm:inline">Customers</span>
+                      <span className="sm:hidden">Cust</span> ({users.length})
                     </TabsTrigger>
                     <TabsTrigger 
                       value="services"
-                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300"
+                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white transition-all duration-300 text-xs sm:text-sm px-2 sm:px-4"
                     >
-                      Services ({services.length})
+                      <span className="hidden sm:inline">Services</span>
+                      <span className="sm:hidden">Serv</span> ({services.length})
                     </TabsTrigger>
                   </TabsList>
                 </div>
 
                 {/* Bookings Tab */}
                 <TabsContent value="bookings" className="w-full">
-                  <div className="space-y-6 w-full">
-                    {filterBookings().map((booking, index) => (
-                      <FloatingElement key={booking.id} delay={index * 0.1}>
-                        <Card3D className="backdrop-blur-sm bg-card/90 border-border/50">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-                                  <UserIcon className="h-6 w-6 text-accent" />
-                                </div>
-                                <div>
-                                  <h3 className="font-semibold text-lg text-foreground group-hover:text-accent transition-colors duration-300">
-                                    {booking.profiles.full_name}
-                                  </h3>
-                                  <p className="text-muted-foreground font-medium">{booking.services.name}</p>
-                                  <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                                    <span className="flex items-center gap-1">
-                                      <Mail className="h-4 w-4" />
-                                      {booking.profiles.email}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <Phone className="h-4 w-4" />
-                                      {booking.profiles.phone}
-                                    </span>
-                                  </div>
+                  <div className="space-y-4 sm:space-y-6 w-full">
+                    {filterBookings().map((booking) => (
+                      <Card key={booking.id} className="backdrop-blur-sm bg-card border-border shadow-md">
+                        <CardContent className="p-4 sm:p-6">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                                <UserIcon className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-base sm:text-lg text-foreground truncate">
+                                  {booking.profiles.full_name}
+                                </h3>
+                                <p className="text-muted-foreground text-sm sm:text-base font-medium truncate">{booking.services.name}</p>
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground mt-1">
+                                  <span className="flex items-center gap-1 truncate">
+                                    <Mail className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                    <span className="truncate">{booking.profiles.email}</span>
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Phone className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                    {booking.profiles.phone}
+                                  </span>
                                 </div>
                               </div>
-                              <Badge className={`${getStatusColor(booking.status)} flex items-center gap-1 transform group-hover:scale-105 transition-transform duration-300`}>
-                                {getStatusIcon(booking.status)}
-                                {booking.status}
-                              </Badge>
                             </div>
+                            <Badge className={`${getStatusColor(booking.status)} flex items-center gap-1 text-xs sm:text-sm flex-shrink-0`}>
+                              {getStatusIcon(booking.status)}
+                              {booking.status}
+                            </Badge>
+                          </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            Date
-                          </p>
-                          <p className="font-medium text-foreground">{new Date(booking.booking_date).toLocaleDateString()}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            Time
-                          </p>
-                          <p className="font-medium text-foreground">{booking.booking_time.substring(0, 5)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Briefcase className="h-4 w-4" />
-                            Professional
-                          </p>
-                          <p className="font-medium text-foreground">{booking.professionals.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Price</p>
-                          <p className="font-medium text-accent">£{booking.services.price.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Booked</p>
-                          <p className="font-medium text-xs text-foreground">{new Date(booking.created_at).toLocaleDateString()}</p>
-                        </div>
-                      </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-4">
+                            <div>
+                              <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
+                                <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                                Date
+                              </p>
+                              <p className="font-medium text-sm sm:text-base text-foreground">{new Date(booking.booking_date).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
+                                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                                Time
+                              </p>
+                              <p className="font-medium text-sm sm:text-base text-foreground">{booking.booking_time.substring(0, 5)}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
+                                <Briefcase className="h-3 w-3 sm:h-4 sm:w-4" />
+                                Professional
+                              </p>
+                              <p className="font-medium text-sm sm:text-base text-foreground truncate">{booking.professionals.name}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs sm:text-sm text-muted-foreground">Price</p>
+                              <p className="font-medium text-sm sm:text-base text-accent">£{booking.services.price.toFixed(2)}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs sm:text-sm text-muted-foreground">Booked</p>
+                              <p className="font-medium text-xs sm:text-sm text-foreground">{new Date(booking.created_at).toLocaleDateString()}</p>
+                            </div>
+                          </div>
 
                       {booking.notes && (
                         <div className="mb-4 p-3 bg-muted rounded-lg">
@@ -749,14 +738,14 @@ const ModernAdmin = () => {
                         </div>
                       )}
 
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                               {booking.status === "pending" && (
                                 <Button
                                   onClick={() => updateBookingStatus(booking.id, "confirmed")}
-                                  className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                                  className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 transition-all duration-300 shadow-lg text-xs sm:text-sm"
                                   size="sm"
                                 >
-                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                   Confirm
                                 </Button>
                               )}
