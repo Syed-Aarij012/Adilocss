@@ -42,7 +42,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FloatingElement, ParticleBackground, GradientOrb } from "@/components/3D/FloatingElements";
-import { Card3D, InteractiveCard } from "@/components/3D/Card3D";
+import { Card, InteractiveCard } from "@/components/3D/Card";
 import { AnimatedBackground, ParallaxSection } from "@/components/3D/AnimatedBackground";
 import { AdminCalendar } from "@/components/AdminCalendar";
 
@@ -627,8 +627,7 @@ const ModernAdmin = () => {
                     </Select>
                   </div>
                 </CardContent>
-              </Card3D>
-            </FloatingElement>
+              </Card>
 
             {/* Main Content Tabs */}
             <Tabs defaultValue="bookings" className="w-full">
@@ -773,22 +772,19 @@ const ModernAdmin = () => {
                               )}
                             </div>
                           </CardContent>
-                        </Card3D>
-                      </FloatingElement>
+                        </Card>
                     ))}
 
                     {filterBookings().length === 0 && (
-                      <FloatingElement delay={0.5}>
-                        <Card3D className="backdrop-blur-sm bg-card/90">
-                          <CardContent className="pt-6 text-center py-12">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-muted/50 to-background/50 flex items-center justify-center">
-                              <Calendar className="h-8 w-8 text-muted-foreground" />
-                            </div>
-                            <p className="text-foreground text-lg font-medium">No bookings found</p>
-                            <p className="text-muted-foreground">Try adjusting your search or filters</p>
-                          </CardContent>
-                        </Card3D>
-                      </FloatingElement>
+                      <Card className="backdrop-blur-sm bg-card">
+                        <CardContent className="pt-6 text-center py-12">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-muted/50 to-background/50 flex items-center justify-center">
+                            <Calendar className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                          <p className="text-foreground text-lg font-medium">No bookings found</p>
+                          <p className="text-muted-foreground">Try adjusting your search or filters</p>
+                        </CardContent>
+                      </Card>
                     )}
                   </div>
                 </TabsContent>
@@ -815,7 +811,7 @@ const ModernAdmin = () => {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
                     {filteredUsers.map((userProfile, index) => (
                       <FloatingElement key={userProfile.id} delay={index * 0.1}>
-                        <Card3D className="backdrop-blur-sm bg-card/90 border-border/50">
+                        <Card className="backdrop-blur-sm bg-card/90 border-border/50">
                           <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-4">
@@ -879,14 +875,14 @@ const ModernAdmin = () => {
                               </div>
                             </div>
                           </CardContent>
-                        </Card3D>
+                        </Card>
                       </FloatingElement>
                     ))}
 
                     {filteredUsers.length === 0 && (
                       <div className="col-span-2">
                         <FloatingElement delay={0.5}>
-                          <Card3D className="backdrop-blur-sm bg-card/90">
+                          <Card className="backdrop-blur-sm bg-card/90">
                             <CardContent className="pt-6 text-center py-12">
                               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-muted/50 to-background/50 flex items-center justify-center">
                                 <Users className="h-8 w-8 text-muted-foreground" />
@@ -894,7 +890,7 @@ const ModernAdmin = () => {
                               <p className="text-foreground text-lg font-medium">No customers found</p>
                               <p className="text-muted-foreground">Try adjusting your search</p>
                             </CardContent>
-                          </Card3D>
+                          </Card>
                         </FloatingElement>
                       </div>
                     )}
@@ -911,7 +907,7 @@ const ModernAdmin = () => {
                       )
                       .map((service, index) => (
                       <FloatingElement key={service.id} delay={index * 0.1}>
-                        <Card3D className="backdrop-blur-sm bg-card/90 border-border/50">
+                        <Card className="backdrop-blur-sm bg-card/90 border-border/50">
                           <CardContent className="p-6">
                       {editingServiceId === service.id ? (
                         // Editing mode
@@ -1017,14 +1013,14 @@ const ModernAdmin = () => {
                         </>
                       )}
                           </CardContent>
-                        </Card3D>
+                        </Card>
                       </FloatingElement>
                     ))}
 
                     {services.length === 0 && (
                       <div className="col-span-3">
                         <FloatingElement delay={0.5}>
-                          <Card3D className="backdrop-blur-sm bg-card/90">
+                          <Card className="backdrop-blur-sm bg-card/90">
                             <CardContent className="pt-6 text-center py-12">
                               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-muted/50 to-background/50 flex items-center justify-center">
                                 <Briefcase className="h-8 w-8 text-muted-foreground" />
@@ -1032,7 +1028,7 @@ const ModernAdmin = () => {
                               <p className="text-foreground text-lg font-medium">No services found</p>
                               <p className="text-muted-foreground">Add services to get started</p>
                             </CardContent>
-                          </Card3D>
+                          </Card>
                         </FloatingElement>
                       </div>
                     )}
