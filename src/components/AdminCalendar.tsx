@@ -130,9 +130,9 @@ export const AdminCalendar = () => {
     return end;
   };
 
-  const getDaysOfWeek = () => {
+  const getDaysOfWeek = (): Date[] => {
     const start = getStartOfWeek(currentDate);
-    const days = [];
+    const days: Date[] = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(start);
       day.setDate(start.getDate() + i);
@@ -141,8 +141,8 @@ export const AdminCalendar = () => {
     return days;
   };
 
-  const getTimeSlots = () => {
-    const slots = [];
+  const getTimeSlots = (): string[] => {
+    const slots: string[] = [];
     for (let hour = 9; hour <= 20; hour++) {
       slots.push(`${hour.toString().padStart(2, '0')}:00`);
       if (hour < 20) {

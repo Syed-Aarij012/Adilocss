@@ -676,8 +676,8 @@ const ModernAdmin = () => {
                 </div>
 
                 {/* Bookings Tab */}
-                <TabsContent value="bookings">
-                  <div className="space-y-6">
+                <TabsContent value="bookings" className="w-full">
+                  <div className="space-y-6 w-full">
                     {filterBookings().map((booking, index) => (
                       <FloatingElement key={booking.id} delay={index * 0.1}>
                         <Card3D className="backdrop-blur-sm bg-card/90 border-border/50">
@@ -805,25 +805,27 @@ const ModernAdmin = () => {
                 </TabsContent>
 
                 {/* Calendar Tab */}
-                <TabsContent value="calendar">
+                <TabsContent value="calendar" className="w-full">
                   <FloatingElement delay={0.2}>
-                    <Card3D className="backdrop-blur-sm bg-card border-border shadow-xl">
-                      <CardContent className="p-6">
+                    <Card3D className="backdrop-blur-sm bg-card border-border shadow-xl w-full">
+                      <CardContent className="p-6 w-full overflow-hidden">
                         <div className="mb-4">
                           <h3 className="text-2xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
                             Professional Booking Calendar
                           </h3>
                           <p className="text-muted-foreground">View and manage bookings by professional and time</p>
                         </div>
-                        <AdminCalendar />
+                        <div className="w-full overflow-auto">
+                          <AdminCalendar />
+                        </div>
                       </CardContent>
                     </Card3D>
                   </FloatingElement>
                 </TabsContent>
 
                 {/* Customers Tab */}
-                <TabsContent value="customers">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <TabsContent value="customers" className="w-full">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
                     {filteredUsers.map((userProfile, index) => (
                       <FloatingElement key={userProfile.id} delay={index * 0.1}>
                         <Card3D className="backdrop-blur-sm bg-card/90 border-border/50">
@@ -913,8 +915,8 @@ const ModernAdmin = () => {
                 </TabsContent>
 
                 {/* Services Tab */}
-                <TabsContent value="services">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <TabsContent value="services" className="w-full">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                     {services
                       .filter(s =>
                         s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
