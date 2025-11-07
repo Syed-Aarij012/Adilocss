@@ -806,21 +806,19 @@ const ModernAdmin = () => {
 
                 {/* Calendar Tab */}
                 <TabsContent value="calendar" className="w-full">
-                  <FloatingElement delay={0.2}>
-                    <Card3D className="backdrop-blur-sm bg-card border-border shadow-xl w-full">
-                      <CardContent className="p-6 w-full overflow-hidden">
+                  <div className="w-full">
+                    <Card className="backdrop-blur-sm bg-card border-border shadow-xl w-full">
+                      <CardContent className="p-6 w-full">
                         <div className="mb-4">
                           <h3 className="text-2xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
                             Professional Booking Calendar
                           </h3>
                           <p className="text-muted-foreground">View and manage bookings by professional and time</p>
                         </div>
-                        <div className="w-full overflow-auto">
-                          <AdminCalendar />
-                        </div>
+                        <AdminCalendar />
                       </CardContent>
-                    </Card3D>
-                  </FloatingElement>
+                    </Card>
+                  </div>
                 </TabsContent>
 
                 {/* Customers Tab */}

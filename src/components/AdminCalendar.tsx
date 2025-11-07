@@ -236,7 +236,7 @@ export const AdminCalendar = () => {
           <div className="overflow-x-auto">
             <div className="min-w-[800px]">
               {/* Header Row with Days */}
-              <div className="grid grid-cols-8 border-b-2 sticky top-0 bg-card z-10">
+              <div className="grid grid-cols-8 border-b-2 sticky top-0 bg-card z-[1]">
                 <div className="p-3 border-r-2 font-bold text-sm text-muted-foreground bg-muted/50">
                   Time
                 </div>
