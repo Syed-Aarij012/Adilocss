@@ -493,6 +493,26 @@ const ModernAdmin = () => {
       );
     }
     
+    // Sort by status priority: pending > confirmed > completed > cancelled
+    const statusPriority: { [key: string]: number } = {
+      'pending': 1,
+      'confirmed': 2,
+      'completed': 3,
+      'cancelled': 4
+    };
+    
+    filtered.sort((a, b) => {
+      const priorityA = statusPriority[a.status] || 999;
+      const priorityB = statusPriority[b.status] || 999;
+      
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+      
+      // If same status, sort by booking date (newest first)
+      return new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime();
+    });
+    
     return filtered;
   };
 
