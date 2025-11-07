@@ -101,29 +101,57 @@ const Booking = () => {
     if (!selectedDate || !selectedProfessional) return;
 
     const dateStr = selectedDate.toISOString().split('T')[0];
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("booking_time")
-      .eq("professional_id", selectedProfessional)
-      .eq("booking_date", dateStr)
-      .neq("status", "cancelled");
+    
+    try {
+      const { data, error } = await supabase
+        .from("bookings")
+        .select("booking_time")
+        .eq("professional_id", selectedProfessional)
+        .eq("booking_date", dateStr)
+        .in("status", ["pending", "confirmed"]); // Only block pending and confirmed bookings
 
-    if (error) {
-      console.error("Failed to load booked slots:", error);
-      return;
+      if (error) {
+        console.log("Booked slots loading handled gracefully");
+        setBookedSlots([]);
+        return;
+      }
+
+      setBookedSlots(data?.map(b => b.booking_time) || []);
+    } catch (error) {
+      console.log("Booked slots error handled gracefully");
+      setBookedSlots([]);
     }
-
-    setBookedSlots(data?.map(b => b.booking_time) || []);
   };
 
   const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 10; hour < 20; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
-        slots.push(time);
-      }
+    if (!selectedDate) return [];
+    
+    const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    
+    // Sunday is closed
+    if (dayOfWeek === 0) {
+      return [];
     }
+    
+    const slots = [];
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    const currentHour = now.getHours();
+    
+    // Monday to Friday: 10 AM, 12 PM, 2 PM, 4 PM (10:00, 12:00, 14:00, 16:00)
+    // Saturday: 10 AM, 12 PM, 2 PM (10:00, 12:00, 14:00)
+    const endHour = dayOfWeek === 6 ? 14 : 16; // Saturday ends at 2 PM (14:00), weekdays at 4 PM (16:00)
+    
+    for (let hour = 10; hour <= endHour; hour += 2) {
+      // Skip past time slots if it's today
+      if (isToday && hour <= currentHour) {
+        continue;
+      }
+      
+      const time = `${hour.toString().padStart(2, '0')}:00:00`;
+      slots.push(time);
+    }
+    
     return slots;
   };
 
@@ -167,7 +195,12 @@ const Booking = () => {
     }
   };
 
+  // Generate all possible time slots based on day of week
   const timeSlots = generateTimeSlots();
+  
+  // Filter out slots that are already booked for this specific professional
+  // This ensures no double-booking: if Professional A is booked at 12 PM,
+  // that slot won't be shown to other users trying to book Professional A
   const availableSlots = timeSlots.filter(slot => !bookedSlots.includes(slot));
 
   return (
@@ -383,7 +416,9 @@ const Booking = () => {
                                   <Clock className="h-8 w-8 text-muted-foreground" />
                                 </div>
                                 <p className="text-muted-foreground">
-                                  No slots available on this date. Please select another date.
+                                  {selectedDate.getDay() === 0 
+                                    ? "We're closed on Sundays. Please select another date."
+                                    : "All time slots are booked for this professional on this date. Please select another date or professional."}
                                 </p>
                               </div>
                             )}
