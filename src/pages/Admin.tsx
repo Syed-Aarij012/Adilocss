@@ -178,17 +178,17 @@ const ModernAdmin = () => {
         .select("*", { count: "exact", head: true })
         .eq("booking_date", today);
 
-      // Get revenue data
+      // Get revenue data - ONLY from completed bookings
       const { data: revenueData } = await db
         .from("bookings")
         .select("services(price), created_at")
-        .neq("status", "cancelled");
+        .eq("status", "completed");
 
       const totalRevenue = revenueData?.reduce((sum, booking) => {
         return sum + (booking.services?.price || 0);
       }, 0) || 0;
 
-      // Calculate monthly revenue (current month)
+      // Calculate monthly revenue (current month) - ONLY from completed bookings
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
       const monthlyRevenue = revenueData?.reduce((sum, booking) => {
