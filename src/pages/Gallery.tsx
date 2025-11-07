@@ -7,20 +7,20 @@ import { X, ZoomIn } from "lucide-react";
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Locs gallery images
+  // Locs/Dreadlocks gallery images
   const galleryImages = [
-    { id: 1, url: "https://images.unsplash.com/photo-1621607512214-68297480165e?w=800&q=80", alt: "Natural locs style" },
-    { id: 2, url: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&q=80", alt: "Styled locs" },
-    { id: 3, url: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=80", alt: "Locs with pattern" },
-    { id: 4, url: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800&q=80", alt: "Long locs style" },
-    { id: 5, url: "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=800&q=80", alt: "Colored locs" },
-    { id: 6, url: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800&q=80", alt: "Locs updo" },
-    { id: 7, url: "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=800&q=80", alt: "Locs with accessories" },
-    { id: 8, url: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=800&q=80", alt: "Freeform locs" },
-    { id: 9, url: "https://images.unsplash.com/photo-1560264280-88b68371db39?w=800&q=80", alt: "Locs maintenance" },
-    { id: 10, url: "https://images.unsplash.com/photo-1598439210625-5067c578f3f6?w=800&q=80", alt: "Styled locs updo" },
-    { id: 11, url: "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=800&q=80", alt: "Locs with highlights" },
-    { id: 12, url: "https://images.unsplash.com/photo-1543965170-4c01a586684e?w=800&q=80", alt: "Natural locs texture" },
+    { id: 1, url: "https://images.unsplash.com/photo-1621607512214-68297480165e?w=800&q=80", alt: "Natural dreadlocks style" },
+    { id: 2, url: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&q=80", alt: "Long locs hairstyle" },
+    { id: 3, url: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800&q=80", alt: "Styled dreadlocks" },
+    { id: 4, url: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=80", alt: "Locs with fade" },
+    { id: 5, url: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800&q=80", alt: "Dreadlocks updo" },
+    { id: 6, url: "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=800&q=80", alt: "Locs with beads" },
+    { id: 7, url: "https://images.unsplash.com/photo-1560264280-88b68371db39?w=800&q=80", alt: "Fresh locs retwist" },
+    { id: 8, url: "https://images.unsplash.com/photo-1598439210625-5067c578f3f6?w=800&q=80", alt: "Styled locs updo" },
+    { id: 9, url: "https://images.unsplash.com/photo-1595475884562-073c30d45670?w=800&q=80", alt: "Colored dreadlocks" },
+    { id: 10, url: "https://images.unsplash.com/photo-1543965170-4c01a586684e?w=800&q=80", alt: "Natural locs texture" },
+    { id: 11, url: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=800&q=80", alt: "Freeform locs" },
+    { id: 12, url: "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=800&q=80", alt: "Locs maintenance" },
   ];
 
   return (
