@@ -14,13 +14,6 @@ const Gallery = () => {
     { id: 3, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTE75FndjFd9ejtyc24OHhUq9L2rLktFp8FC5w4mbB3xHR_99t0PPHPSx3C5_sewc5ZvbU&usqp=CAU", alt: "Styled locs with design" },
     { id: 4, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT39B2zUPt4pocDwBMt6cYh0iJFPuYDI07i7aS7RI0jwfM3ddacWoNzeVlKUCsyvxQU9g&usqp=CAU", alt: "Locs retwist pattern" },
     { id: 5, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCMdquq7ryPd4JmcqyNKMv7-Ikvebnd1ldXg&s", alt: "Fresh locs with design" },
-    { id: 6, url: "https://i.pinimg.com/564x/8e/0f/3f/8e0f3f0a8c0e8f8e8f8e8f8e8f8e8f8e.jpg", alt: "Locs pattern style" },
-    { id: 7, url: "https://i.pinimg.com/originals/3f/8e/0f/3f8e0f0a8c0e8f8e8f8e8f8e8f8e8f8e.jpg", alt: "Locs with fade and pattern" },
-    { id: 8, url: "https://i.pinimg.com/736x/3f/8e/0f/3f8e0f0a8c0e8f8e8f8e8f8e8f8e8f8e.jpg", alt: "Styled locs back view" },
-    { id: 9, url: "https://i.pinimg.com/564x/3f/8e/0f/3f8e0f0a8c0e8f8e8f8e8f8e8f8e8f8e.jpg", alt: "Locs with geometric pattern" },
-    { id: 10, url: "https://i.pinimg.com/originals/0f/3f/8e/0f3f8e0a8c0e8f8e8f8e8f8e8f8e8f8e.jpg", alt: "Locs updo with pattern" },
-    { id: 11, url: "https://i.pinimg.com/736x/0f/3f/8e/0f3f8e0a8c0e8f8e8f8e8f8e8f8e8f8e.jpg", alt: "Fresh locs retwist" },
-    { id: 12, url: "https://i.pinimg.com/564x/0f/3f/8e/0f3f8e0a8c0e8f8e8f8e8f8e8f8e8f8e.jpg", alt: "Locs with creative design" },
   ];
 
   return (
@@ -47,36 +40,32 @@ const Gallery = () => {
               </p>
             </FloatingElement>
 
-            <FloatingElement delay={0.5}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {galleryImages.map((image, index) => (
-                  <FloatingElement key={image.id} delay={index * 0.1}>
-                    <Card3D className="overflow-hidden cursor-pointer group">
-                      <div 
-                        className="relative"
-                        onClick={() => setSelectedImage(image.url)}
-                      >
-                        <img 
-                          src={image.url} 
-                          alt={image.alt}
-                          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        
-                        {/* Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                            <ZoomIn className="h-6 w-6 text-white" />
-                          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {galleryImages.map((image, index) => (
+                <div key={image.id} className="w-full">
+                  <div className="overflow-hidden cursor-pointer group rounded-lg border border-border shadow-md hover:shadow-xl transition-all duration-300">
+                    <div 
+                      className="relative"
+                      onClick={() => setSelectedImage(image.url)}
+                    >
+                      <img 
+                        src={image.url} 
+                        alt={image.alt}
+                        className="w-full h-56 sm:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                          <ZoomIn className="h-6 w-6 text-white" />
                         </div>
-                        
-                        {/* Shimmer effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                       </div>
-                    </Card3D>
-                  </FloatingElement>
-                ))}
-              </div>
-            </FloatingElement>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
