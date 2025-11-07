@@ -30,10 +30,6 @@ export const AdminNavigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <span className="text-muted-foreground text-sm bg-gradient-to-r from-muted/50 to-background/50 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
-              Salon Management System
-            </span>
-            
             <Button 
               onClick={handleSignOut} 
               variant="outline" 
