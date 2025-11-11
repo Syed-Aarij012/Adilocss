@@ -62,14 +62,13 @@ export const AdminCalendar = () => {
   const loadBookings = async () => {
     setLoading(true);
     try {
-      const startOfWeek = getStartOfWeek(currentDate);
-      const endOfWeek = getEndOfWeek(currentDate);
+      // Load bookings for the selected date only (daily view)
+      const dateStr = currentDate.toISOString().split('T')[0];
 
       let query = db
         .from("bookings")
         .select("*")
-        .gte("booking_date", startOfWeek.toISOString().split('T')[0])
-        .lte("booking_date", endOfWeek.toISOString().split('T')[0]);
+        .eq("booking_date", dateStr);
 
       if (selectedProfessional !== "all") {
         query = query.eq("professional_id", selectedProfessional);
@@ -147,12 +146,24 @@ export const AdminCalendar = () => {
 
   const getTimeSlots = (): string[] => {
     const slots: string[] = [];
-    for (let hour = 9; hour <= 20; hour++) {
-      slots.push(`${hour.toString().padStart(2, '0')}:00`);
-      if (hour < 20) {
-        slots.push(`${hour.toString().padStart(2, '0')}:30`);
-      }
+    const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+    
+    // Determine closing time based on day
+    let closingHour = 18; // Default: 6 PM for Monday-Friday
+    if (dayOfWeek === 6) {
+      closingHour = 16; // Saturday: 4 PM
+    } else if (dayOfWeek === 0) {
+      return []; // Sunday: Closed
     }
+    
+    // Generate slots from 9 AM to closing time
+    for (let hour = 9; hour < closingHour; hour++) {
+      slots.push(`${hour.toString().padStart(2, '0')}:00`);
+      slots.push(`${hour.toString().padStart(2, '0')}:30`);
+    }
+    // Add the final hour slot (e.g., 18:00 for 6 PM or 16:00 for 4 PM)
+    slots.push(`${closingHour.toString().padStart(2, '0')}:00`);
+    
     return slots;
   };
 
@@ -210,20 +221,26 @@ export const AdminCalendar = () => {
     return `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
   };
 
-  const goToPreviousWeek = () => {
+  const goToPreviousDay = () => {
     const newDate = new Date(currentDate);
-    newDate.setDate(currentDate.getDate() - 7);
+    newDate.setDate(currentDate.getDate() - 1);
     setCurrentDate(newDate);
   };
 
-  const goToNextWeek = () => {
+  const goToNextDay = () => {
     const newDate = new Date(currentDate);
-    newDate.setDate(currentDate.getDate() + 7);
+    newDate.setDate(currentDate.getDate() + 1);
     setCurrentDate(newDate);
   };
 
   const goToToday = () => {
     setCurrentDate(new Date());
+  };
+
+  // Get professionals who have bookings on the current date
+  const getActiveProfessionals = () => {
+    const professionalIds = [...new Set(bookings.map(b => b.professional_id))];
+    return professionals.filter(p => professionalIds.includes(p.id));
   };
 
   const getStatusColor = (status: string) => {
@@ -239,109 +256,74 @@ export const AdminCalendar = () => {
     }
   };
 
-  const daysOfWeek = getDaysOfWeek();
   const timeSlots = getTimeSlots();
-  const startOfWeek = getStartOfWeek(currentDate);
-  const endOfWeek = getEndOfWeek(currentDate);
+  const activeProfessionals = getActiveProfessionals();
+  const isToday = currentDate.toDateString() === new Date().toDateString();
 
   return (
     <div className="space-y-4">
-      {/* Calendar Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button onClick={goToPreviousWeek} variant="outline" size="sm">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-center min-w-[200px]">
-              <h3 className="font-semibold text-lg">
-                {startOfWeek.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} - {endOfWeek.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-              </h3>
-            </div>
-            <Button onClick={goToNextWeek} variant="outline" size="sm">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button onClick={goToToday} variant="outline" size="sm">
-              Today
-            </Button>
-          </div>
-        </div>
-
-        {/* Professional Filter - Avatar Style */}
-        <div className="flex items-center gap-4 overflow-x-auto pb-2">
-          <button
-            onClick={() => setSelectedProfessional("all")}
-            className={`flex flex-col items-center gap-2 min-w-fit transition-all duration-300 ${
-              selectedProfessional === "all" ? "scale-110" : "opacity-60 hover:opacity-100"
-            }`}
-          >
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300 ${
-              selectedProfessional === "all" 
-                ? "bg-gradient-to-br from-accent to-primary text-white shadow-lg ring-4 ring-accent/30" 
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}>
-              All
-            </div>
-            <span className={`text-sm font-medium ${
-              selectedProfessional === "all" ? "text-accent" : "text-muted-foreground"
-            }`}>
-              All Professionals
+      {/* Calendar Header - Compact Date Selector */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Button onClick={goToPreviousDay} variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-md cursor-pointer hover:bg-muted/80">
+            <span className="font-semibold text-base">
+              {currentDate.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
             </span>
-          </button>
+            <ChevronRight className="h-4 w-4 rotate-90" />
+          </div>
+          <Button onClick={goToNextDay} variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <Button onClick={goToToday} variant="outline" size="sm">
+          Today
+        </Button>
+      </div>
 
-          {professionals.map(prof => {
+      {/* Professional Avatars Row */}
+      {activeProfessionals.length > 0 && (
+        <div className="flex items-center justify-center gap-6 mb-6 pb-4 border-b">
+          {activeProfessionals.map(prof => {
             // Get first letter of the name
             const firstLetter = prof.name.trim()[0].toUpperCase();
             
             return (
-              <button
+              <div
                 key={prof.id}
-                onClick={() => setSelectedProfessional(prof.id)}
-                className={`flex flex-col items-center gap-2 min-w-fit transition-all duration-300 ${
-                  selectedProfessional === prof.id ? "scale-110" : "opacity-60 hover:opacity-100"
-                }`}
+                className="flex flex-col items-center gap-2"
               >
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 ${
-                  selectedProfessional === prof.id 
-                    ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-lg ring-4 ring-blue-400/30" 
-                    : "bg-blue-100 text-blue-600 hover:bg-blue-200 border-2 border-blue-300"
-                }`}>
+                <div className="w-14 h-14 rounded-full bg-blue-100 text-blue-600 border-2 border-blue-300 flex items-center justify-center text-xl font-bold">
                   {firstLetter}
                 </div>
-                <span className={`text-sm font-medium ${
-                  selectedProfessional === prof.id ? "text-blue-600" : "text-muted-foreground"
-                }`}>
+                <span className="text-sm font-medium text-muted-foreground">
                   {prof.name}
                 </span>
-              </button>
+              </div>
             );
           })}
         </div>
-      </div>
+      )}
 
       {/* Calendar Grid */}
       <Card className="overflow-hidden border-2 shadow-lg">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <div className="min-w-[800px]">
-              {/* Header Row with Days */}
-              <div className="grid grid-cols-8 border-b-2 sticky top-0 bg-card z-[1]">
-                <div className="p-3 border-r-2 font-bold text-sm text-muted-foreground bg-muted/50">
-                  Time
+              {/* Header Row - Just column dividers, no headers */}
+              <div className={`grid border-b-2 sticky top-0 bg-card z-[1]`} style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
+                <div className="p-2 border-r-2 bg-muted/50">
+                  {/* Empty time column header */}
                 </div>
-                {daysOfWeek.map((day, index) => {
-                  const isToday = day.toDateString() === new Date().toDateString();
+                {activeProfessionals.map((prof) => {
                   return (
                     <div 
-                      key={index} 
-                      className={`p-3 text-center border-r-2 last:border-r-0 ${isToday ? 'bg-accent/20 border-accent' : 'bg-muted/30'}`}
+                      key={prof.id} 
+                      className="border-r-2 last:border-r-0 bg-background"
                     >
-                      <div className="font-bold text-sm">
-                        {day.toLocaleDateString('en-GB', { weekday: 'short' })}
-                      </div>
-                      <div className={`text-xl font-bold ${isToday ? 'text-accent' : ''}`}>
-                        {day.getDate()}
-                      </div>
+                      {/* Empty professional column header */}
                     </div>
                   );
                 })}
@@ -352,26 +334,29 @@ export const AdminCalendar = () => {
                 <div className="p-8 text-center text-muted-foreground">
                   Loading bookings...
                 </div>
+              ) : activeProfessionals.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  No bookings for this day
+                </div>
               ) : (
                 <div className="relative">
                   {timeSlots.map((time) => (
-                    <div key={time} className="grid grid-cols-8 border-b min-h-[70px]">
-                      <div className="p-2 border-r-2 text-sm text-muted-foreground font-semibold bg-muted/20">
-                        {time}
+                    <div key={time} className="grid border-b min-h-[70px]" style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
+                      <div className="p-2 border-r-2 text-xs text-muted-foreground font-medium bg-muted/10 flex items-start">
+                        <span>{time.replace(':00', ':00\nam').replace(':30', ':30\nam')}</span>
                       </div>
-                      {daysOfWeek.map((day, dayIndex) => {
-                        const slotBookings = getBookingsForSlot(day, time);
-                        const isToday = day.toDateString() === new Date().toDateString();
-                        
-                        // Find all bookings that span this slot
-                        const spanningBookings = bookings.filter(b => isBookingInSlot(b, day, time));
+                      {activeProfessionals.map((prof) => {
+                        const professionalBookings = bookings.filter(b => 
+                          b.professional_id === prof.id && 
+                          b.booking_time.substring(0, 5) === time
+                        );
                         
                         return (
                           <div 
-                            key={dayIndex} 
-                            className={`p-1 border-r last:border-r-0 relative ${isToday ? 'bg-accent/5' : ''}`}
+                            key={prof.id} 
+                            className="p-1 border-r last:border-r-0 relative"
                           >
-                            {slotBookings.map((booking) => {
+                            {professionalBookings.map((booking) => {
                               const spanSlots = getBookingSpanSlots(booking);
                               const heightInPixels = spanSlots * 70 - 8; // 70px per slot minus padding
                               
@@ -380,19 +365,19 @@ export const AdminCalendar = () => {
                                   key={booking.id}
                                   className={`text-xs p-2 rounded-md mb-1 cursor-pointer hover:opacity-80 transition-all border ${getStatusColor(booking.status)} shadow-sm hover:shadow-md absolute left-1 right-1 z-10`}
                                   style={{ height: `${heightInPixels}px` }}
-                                  title={`${booking.professional_name} - ${booking.service_name} - ${booking.booking_time.substring(0, 5)} - ${booking.customer_name} (${booking.status})`}
+                                  title={`${booking.service_name} - ${booking.customer_name} (${booking.status})`}
                                 >
-                                  <div className="font-bold truncate text-sm">
+                                  <div className="font-bold truncate text-base mb-1">
                                     {booking.booking_time.substring(0, 5)} - {getBookingEndTime(booking)}
                                   </div>
-                                  <div className="truncate text-xs opacity-90 mt-1">
-                                    👤 {booking.professional_name}
+                                  <div className="truncate text-sm opacity-90">
+                                    {booking.professional_name}
                                   </div>
-                                  <div className="truncate text-xs opacity-90">
+                                  <div className="truncate text-sm opacity-90">
                                     {booking.service_name}
                                   </div>
-                                  <div className="truncate text-xs opacity-75 mt-1">
-                                    {booking.customer_name}
+                                  <div className="truncate text-sm opacity-75 mt-1 flex items-center gap-1">
+                                    <span>👤</span> {booking.customer_name}
                                   </div>
                                 </div>
                               );

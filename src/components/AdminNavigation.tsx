@@ -15,8 +15,39 @@ export const AdminNavigation = () => {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
+    try {
+      console.log("Attempting to sign out...");
+      
+      // Try to sign out
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Sign out error:", error.message);
+        
+        // If session is already missing, just clear storage and redirect
+        if (error.message.includes("session missing") || error.message.includes("Auth session missing")) {
+          console.log("Session already missing, clearing storage and redirecting...");
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = "/";
+        } else {
+          alert(`Failed to sign out: ${error.message}`);
+        }
+      } else {
+        console.log("Sign out successful, redirecting...");
+        // Clear local storage as backup
+        localStorage.clear();
+        sessionStorage.clear();
+        // Force redirect to home
+        window.location.href = "/";
+      }
+    } catch (error: any) {
+      console.error("Exception during sign out:", error);
+      // Even if there's an error, try to clear and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/";
+    }
   };
 
   return (
