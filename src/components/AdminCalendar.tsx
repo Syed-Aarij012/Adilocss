@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
@@ -42,6 +42,10 @@ export const AdminCalendar = () => {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [selectedProfessional, setSelectedProfessional] = useState<string>("all");
   const [loading, setLoading] = useState(true);
+  
+  // Refs for scroll synchronization
+  const headerScrollRef = useRef<HTMLDivElement>(null);
+  const gridScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadProfessionals();
@@ -297,6 +301,19 @@ export const AdminCalendar = () => {
   const activeProfessionals = getActiveProfessionals();
   const isToday = currentDate.toDateString() === new Date().toDateString();
 
+  // Scroll synchronization handlers
+  const handleHeaderScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (gridScrollRef.current) {
+      gridScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+  };
+
+  const handleGridScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (headerScrollRef.current) {
+      headerScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Calendar Header - Compact Date Selector */}
@@ -339,9 +356,14 @@ export const AdminCalendar = () => {
 
 
 
-      {/* Professional Names Row - Outside Table */}
+      {/* Professional Names Row - Outside table, synced scroll */}
       {activeProfessionals.length > 0 && (
-        <div className="overflow-x-auto mb-0">
+        <div 
+          ref={headerScrollRef}
+          className="overflow-x-auto mb-0 scrollbar-hide"
+          onScroll={handleHeaderScroll}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           <div className="min-w-[800px]">
             <div className={`grid`} style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
               <div className="p-2">
@@ -371,25 +393,12 @@ export const AdminCalendar = () => {
       {/* Calendar Grid */}
       <Card className="overflow-hidden border-2 shadow-lg">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div 
+            ref={gridScrollRef}
+            className="overflow-x-auto"
+            onScroll={handleGridScroll}
+          >
             <div className="min-w-[800px]">
-              {/* Header Row - Empty */}
-              <div className={`grid border-b-2 sticky top-0 bg-card z-[1]`} style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
-                <div className="p-2 border-r-2 bg-muted/50">
-                  {/* Empty time column header */}
-                </div>
-                {activeProfessionals.map((prof) => {
-                  return (
-                    <div 
-                      key={prof.id} 
-                      className="border-r-2 last:border-r-0 bg-background"
-                    >
-                      {/* Empty column header */}
-                    </div>
-                  );
-                })}
-              </div>
-
               {/* Time Slots */}
               {loading ? (
                 <div className="p-8 text-center text-muted-foreground">
