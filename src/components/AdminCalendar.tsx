@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 const db = supabase as any;
 
@@ -28,6 +30,7 @@ interface Professional {
 export const AdminCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [bookings, setBookings] = useState<CalendarBooking[]>([]);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [selectedProfessional, setSelectedProfessional] = useState<string>("all");
   const [loading, setLoading] = useState(true);
@@ -268,12 +271,29 @@ export const AdminCalendar = () => {
           <Button onClick={goToPreviousDay} variant="ghost" size="sm" className="h-8 w-8 p-0">
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-md cursor-pointer hover:bg-muted/80">
-            <span className="font-semibold text-base">
-              {currentDate.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
-            </span>
-            <ChevronRight className="h-4 w-4 rotate-90" />
-          </div>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger asChild>
+              <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-md cursor-pointer hover:bg-muted/80">
+                <span className="font-semibold text-base">
+                  {currentDate.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
+                </span>
+                <ChevronRight className="h-4 w-4 rotate-90" />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={currentDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setCurrentDate(date);
+                    setIsCalendarOpen(false);
+                  }
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           <Button onClick={goToNextDay} variant="ghost" size="sm" className="h-8 w-8 p-0">
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -283,27 +303,34 @@ export const AdminCalendar = () => {
         </Button>
       </div>
 
-      {/* Professional Avatars Row */}
+
+
+      {/* Professional Names Row - Outside Table */}
       {activeProfessionals.length > 0 && (
-        <div className="flex items-center justify-center gap-6 mb-6 pb-4 border-b">
-          {activeProfessionals.map(prof => {
-            // Get first letter of the name
-            const firstLetter = prof.name.trim()[0].toUpperCase();
-            
-            return (
-              <div
-                key={prof.id}
-                className="flex flex-col items-center gap-2"
-              >
-                <div className="w-14 h-14 rounded-full bg-blue-100 text-blue-600 border-2 border-blue-300 flex items-center justify-center text-xl font-bold">
-                  {firstLetter}
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  {prof.name}
-                </span>
+        <div className="overflow-x-auto mb-0">
+          <div className="min-w-[800px]">
+            <div className={`grid`} style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
+              <div className="p-2">
+                {/* Empty space above time column */}
               </div>
-            );
-          })}
+              {activeProfessionals.map((prof) => {
+                const firstLetter = prof.name.trim()[0].toUpperCase();
+                return (
+                  <div 
+                    key={prof.id} 
+                    className="p-3 flex flex-col items-center justify-center gap-2"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 border-2 border-blue-300 flex items-center justify-center text-lg font-bold">
+                      {firstLetter}
+                    </div>
+                    <span className="text-sm font-medium text-foreground">
+                      {prof.name}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
 
@@ -312,7 +339,7 @@ export const AdminCalendar = () => {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <div className="min-w-[800px]">
-              {/* Header Row - Just column dividers, no headers */}
+              {/* Header Row - Empty */}
               <div className={`grid border-b-2 sticky top-0 bg-card z-[1]`} style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
                 <div className="p-2 border-r-2 bg-muted/50">
                   {/* Empty time column header */}
@@ -323,7 +350,7 @@ export const AdminCalendar = () => {
                       key={prof.id} 
                       className="border-r-2 last:border-r-0 bg-background"
                     >
-                      {/* Empty professional column header */}
+                      {/* Empty column header */}
                     </div>
                   );
                 })}
