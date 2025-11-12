@@ -12,6 +12,14 @@ import { Card3D, InteractiveCard } from "@/components/3D/Card3D";
 import { AnimatedBackground } from "@/components/3D/AnimatedBackground";
 import { CheckCircle, Clock, User as UserIcon, Calendar as CalendarIcon } from "lucide-react";
 
+// Helper function to format date without timezone conversion
+const formatDateForDatabase = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 interface Service {
   id: string;
   name: string;
@@ -100,7 +108,7 @@ const Booking = () => {
   const loadBookedSlots = async () => {
     if (!selectedDate || !selectedProfessional) return;
 
-    const dateStr = selectedDate.toISOString().split('T')[0];
+    const dateStr = formatDateForDatabase(selectedDate);
     
     try {
       const { data, error } = await supabase
@@ -170,11 +178,19 @@ const Booking = () => {
     setLoading(true);
 
     try {
+      const formattedDate = formatDateForDatabase(selectedDate);
+      
+      console.log("Creating booking:", {
+        date: formattedDate,
+        selectedDate: selectedDate.toDateString(),
+        time: selectedTime
+      });
+
       const { error } = await supabase.from("bookings").insert({
         user_id: user.id,
         service_id: selectedService,
         professional_id: selectedProfessional,
-        booking_date: selectedDate.toISOString().split('T')[0],
+        booking_date: formattedDate,
         booking_time: selectedTime,
         status: "pending",
       });

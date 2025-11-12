@@ -96,6 +96,13 @@ interface DashboardStats {
   monthlyRevenue: number;
 }
 
+// Helper function to format date for display (avoids timezone issues)
+const formatDateForDisplay = (dateString: string) => {
+  // dateString is in YYYY-MM-DD format
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 const ModernAdmin = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -129,6 +136,24 @@ const ModernAdmin = () => {
 
   useEffect(() => {
     checkAdminStatus();
+    
+    // Set up real-time subscription for bookings
+    const bookingsSubscription = supabase
+      .channel('bookings-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'bookings' },
+        (payload) => {
+          console.log('Booking changed:', payload);
+          // Reload bookings and stats when any booking changes
+          loadBookings();
+          loadStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      bookingsSubscription.unsubscribe();
+    };
   }, []);
 
   const checkAdminStatus = async () => {
@@ -464,15 +489,20 @@ const ModernAdmin = () => {
   };
 
   const startEditBooking = (booking: Booking) => {
+    console.log("Starting edit for booking:", booking);
     setEditingBookingId(booking.id);
     // Format time to HH:MM for the input field (remove seconds if present)
     const timeForInput = booking.booking_time.substring(0, 5);
-    setEditingBookingData({
+    
+    const editData = {
       booking_date: booking.booking_date,
       booking_time: timeForInput,
       service_id: booking.service_id || booking.services?.id || "",
       professional_id: booking.professional_id || booking.professionals?.id || "",
-    });
+    };
+    
+    console.log("Edit data prepared:", editData);
+    setEditingBookingData(editData);
   };
 
   const cancelEditBooking = () => {
@@ -481,13 +511,26 @@ const ModernAdmin = () => {
   };
 
   const saveBookingChanges = async () => {
-    if (!editingBookingId || !editingBookingData) return;
+    if (!editingBookingId || !editingBookingData) {
+      toast.error("No booking selected for editing");
+      return;
+    }
+
+    console.log("Attempting to save booking changes:", {
+      bookingId: editingBookingId,
+      data: editingBookingData
+    });
 
     // Validate the data
     if (!editingBookingData.booking_date || !editingBookingData.booking_time || 
         !editingBookingData.service_id || !editingBookingData.professional_id) {
       toast.error("Please fill in all fields");
-      console.log("Validation failed:", editingBookingData);
+      console.error("Validation failed - missing fields:", {
+        date: editingBookingData.booking_date,
+        time: editingBookingData.booking_time,
+        service: editingBookingData.service_id,
+        professional: editingBookingData.professional_id
+      });
       return;
     }
 
@@ -499,46 +542,42 @@ const ModernAdmin = () => {
         formattedTime = `${formattedTime}:00`;
       }
 
-      console.log("Updating booking with data:", {
-        booking_id: editingBookingId,
+      const updateData = {
         booking_date: editingBookingData.booking_date,
         booking_time: formattedTime,
         service_id: editingBookingData.service_id,
-        professional_id: editingBookingData.professional_id,
+        professional_id: editingBookingData.professional_id
+      };
+
+      console.log("Sending update to database:", {
+        booking_id: editingBookingId,
+        updateData: updateData
       });
 
-      const { data, error } = await db
+      const { data, error } = await supabase
         .from("bookings")
-        .update({
-          booking_date: editingBookingData.booking_date,
-          booking_time: formattedTime,
-          service_id: editingBookingData.service_id,
-          professional_id: editingBookingData.professional_id
-        })
+        .update(updateData)
         .eq("id", editingBookingId)
         .select();
 
       if (error) {
+        console.error("Database update error:", error);
         toast.error(`Update failed: ${error.message}`);
-        console.error("Booking update error details:", {
-          error,
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
         return;
       }
 
-      console.log("Booking updated successfully:", data);
-      toast.success("Booking updated! Changes synced to user's bookings.");
+      console.log("Database update successful:", data);
+      toast.success("Booking updated! Changes synced everywhere.");
+      
+      // Clear editing state
       setEditingBookingId(null);
       setEditingBookingData(null);
-      // Refresh bookings list to show updated data
-      await loadBookings();
+      
+      // Refresh bookings and stats
+      await Promise.all([loadBookings(), loadStats()]);
     } catch (error: any) {
+      console.error("Exception during update:", error);
       toast.error(`Failed to update booking: ${error?.message || 'Unknown error'}`);
-      console.error("Exception updating booking:", error);
     }
   };
 
@@ -710,7 +749,7 @@ const ModernAdmin = () => {
       }
       
       // If same status, sort by booking date (newest first)
-      return new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime();
+      return b.booking_date.localeCompare(a.booking_date) * -1;
     });
     
     return filtered;
@@ -923,7 +962,7 @@ const ModernAdmin = () => {
                                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                                 Date
                               </p>
-                              <p className="font-medium text-sm sm:text-base text-foreground">{new Date(booking.booking_date).toLocaleDateString()}</p>
+                              <p className="font-medium text-sm sm:text-base text-foreground">{formatDateForDisplay(booking.booking_date)}</p>
                             </div>
                             <div>
                               <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">

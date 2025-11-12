@@ -12,6 +12,13 @@ import { FloatingElement, ParticleBackground, GradientOrb } from "@/components/3
 import { Card3D, InteractiveCard } from "@/components/3D/Card3D";
 import { AnimatedBackground } from "@/components/3D/AnimatedBackground";
 
+// Helper function to format date for display (avoids timezone issues)
+const formatDateForDisplay = (dateString: string) => {
+  // dateString is in YYYY-MM-DD format
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 interface Booking {
   id: string;
   booking_date: string;
@@ -50,6 +57,28 @@ const MyBookings = () => {
   useEffect(() => {
     if (user) {
       loadBookings();
+      
+      // Set up real-time subscription for user's bookings
+      const bookingsSubscription = supabase
+        .channel('my-bookings-changes')
+        .on('postgres_changes', 
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: 'bookings',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('My booking changed:', payload);
+            // Reload bookings when user's bookings change
+            loadBookings();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        bookingsSubscription.unsubscribe();
+      };
     }
   }, [user]);
 
@@ -190,7 +219,7 @@ const MyBookings = () => {
                             </div>
                             <div>
                               <p className="text-xs text-muted-foreground uppercase tracking-wide">Date</p>
-                              <span className="font-medium">{new Date(booking.booking_date).toLocaleDateString()}</span>
+                              <span className="font-medium">{formatDateForDisplay(booking.booking_date)}</span>
                             </div>
                           </div>
                           

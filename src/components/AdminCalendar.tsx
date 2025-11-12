@@ -10,6 +10,14 @@ import { Calendar } from "@/components/ui/calendar";
 
 const db = supabase as any;
 
+// Helper function to format date without timezone conversion
+const formatDateForDatabase = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 interface CalendarBooking {
   id: string;
   booking_date: string;
@@ -41,6 +49,23 @@ export const AdminCalendar = () => {
 
   useEffect(() => {
     loadBookings();
+    
+    // Set up real-time subscription for bookings
+    const bookingsSubscription = supabase
+      .channel('calendar-bookings-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'bookings' },
+        (payload) => {
+          console.log('Calendar: Booking changed:', payload);
+          // Reload bookings when any booking changes
+          loadBookings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      bookingsSubscription.unsubscribe();
+    };
   }, [currentDate, selectedProfessional]);
 
   const loadProfessionals = async () => {
@@ -66,7 +91,9 @@ export const AdminCalendar = () => {
     setLoading(true);
     try {
       // Load bookings for the selected date only (daily view)
-      const dateStr = currentDate.toISOString().split('T')[0];
+      const dateStr = formatDateForDatabase(currentDate);
+      
+      console.log("Calendar loading bookings for date:", dateStr, "from:", currentDate.toDateString());
 
       let query = db
         .from("bookings")
@@ -113,6 +140,13 @@ export const AdminCalendar = () => {
         };
       });
 
+      console.log("Calendar loaded bookings:", enrichedBookings.map(b => ({
+        date: b.booking_date,
+        time: b.booking_time,
+        customer: b.customer_name,
+        professional: b.professional_name
+      })));
+      
       setBookings(enrichedBookings);
     } catch (error) {
       console.error("Failed to load bookings:", error);
@@ -171,7 +205,7 @@ export const AdminCalendar = () => {
   };
 
   const getBookingsForSlot = (date: Date, time: string) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = formatDateForDatabase(date);
     return bookings.filter(b => 
       b.booking_date === dateStr && 
       b.booking_time.substring(0, 5) === time
@@ -180,7 +214,7 @@ export const AdminCalendar = () => {
 
   // Check if a booking spans this time slot
   const isBookingInSlot = (booking: CalendarBooking, date: Date, time: string): boolean => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = formatDateForDatabase(date);
     if (booking.booking_date !== dateStr) return false;
 
     const bookingStartTime = booking.booking_time.substring(0, 5);
