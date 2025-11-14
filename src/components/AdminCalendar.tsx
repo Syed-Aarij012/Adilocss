@@ -278,10 +278,9 @@ export const AdminCalendar = () => {
     setCurrentDate(new Date());
   };
 
-  // Get professionals who have bookings on the current date
+  // Get all professionals (not just those with bookings)
   const getActiveProfessionals = () => {
-    const professionalIds = [...new Set(bookings.map(b => b.professional_id))];
-    return professionals.filter(p => professionalIds.includes(p.id));
+    return professionals;
   };
 
   const getStatusColor = (status: string) => {
@@ -365,7 +364,7 @@ export const AdminCalendar = () => {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           <div className="min-w-[800px]">
-            <div className={`grid`} style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
+            <div className={`grid`} style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, minmax(200px, 1fr))` }}>
               <div className="p-2">
                 {/* Empty space above time column */}
               </div>
@@ -374,7 +373,7 @@ export const AdminCalendar = () => {
                 return (
                   <div 
                     key={prof.id} 
-                    className="p-3 flex flex-col items-center justify-center gap-2"
+                    className="px-3 py-3 flex flex-col items-center justify-center gap-2"
                   >
                     <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 border-2 border-blue-300 flex items-center justify-center text-lg font-bold">
                       {firstLetter}
@@ -404,15 +403,15 @@ export const AdminCalendar = () => {
                 <div className="p-8 text-center text-muted-foreground">
                   Loading bookings...
                 </div>
-              ) : activeProfessionals.length === 0 ? (
+              ) : professionals.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
-                  No bookings for this day
+                  No professionals available
                 </div>
               ) : (
                 <div className="relative">
                   {timeSlots.map((time) => (
-                    <div key={time} className="grid border-b min-h-[70px]" style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, 1fr)` }}>
-                      <div className="p-2 border-r-2 text-xs text-muted-foreground font-medium bg-muted/10 flex items-start">
+                    <div key={time} className="grid min-h-[70px]" style={{ gridTemplateColumns: `80px repeat(${activeProfessionals.length}, minmax(200px, 1fr))` }}>
+                      <div className="p-2 border-r-2 border-b border-gray-300 dark:border-gray-600 text-xs text-muted-foreground font-medium bg-muted/10 flex items-start">
                         <span>{time.replace(':00', ':00\nam').replace(':30', ':30\nam')}</span>
                       </div>
                       {activeProfessionals.map((prof) => {
@@ -424,7 +423,7 @@ export const AdminCalendar = () => {
                         return (
                           <div 
                             key={prof.id} 
-                            className="p-1 border-r last:border-r-0 relative"
+                            className="px-2 py-1 border-r border-b border-gray-200 dark:border-gray-700 relative"
                           >
                             {professionalBookings.map((booking) => {
                               const spanSlots = getBookingSpanSlots(booking);
@@ -433,7 +432,7 @@ export const AdminCalendar = () => {
                               return (
                                 <div
                                   key={booking.id}
-                                  className={`text-xs p-2 rounded-md mb-1 cursor-pointer hover:opacity-80 transition-all border ${getStatusColor(booking.status)} shadow-sm hover:shadow-md absolute left-1 right-1 z-10`}
+                                  className={`text-xs p-3 rounded-md mb-1 cursor-pointer hover:opacity-80 transition-all border ${getStatusColor(booking.status)} shadow-sm hover:shadow-md absolute left-2 right-2 z-10`}
                                   style={{ height: `${heightInPixels}px` }}
                                   title={`${booking.service_name} - ${booking.customer_name} (${booking.status})`}
                                 >
